@@ -1,0 +1,45 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [ "main" ] # Triggers whenever you push to main
+  workflow_dispatch: # Allows you to trigger this manually from GitHub
+
+jobs:
+  build-ios:
+    runs-on: macos-latest # Required to build iOS binaries
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      # Crucial: This builds for the simulator architecture Appetize needs
+      - name: Build iOS Simulator App via Xcode
+        run: |
+          cd iosApp
+          xcodebuild -workspace iosApp.xcworkspace \
+                     -scheme iosApp \
+                     -configuration Debug \
+                     -sdk iphonesimulator \
+                     -derivedDataPath build \
+                     CODE_SIGNING_ALLOWED=NO
+
+      # Compresses the simulator bundle into a .zip file
+      - name: Zip .app bundle for Appetize
+        run: |
+          cd iosApp/build/Build/Products/Debug-iphonesimulator/
+          zip -r iosApp.zip iosApp.app
+
+      # Uploads the zip file so you can download it from GitHub
+      - name: Upload Zip Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: appetize-ios-build
+          path: iosApp/build/Build/Products/Debug-iphonesimulator/iosApp.zip
