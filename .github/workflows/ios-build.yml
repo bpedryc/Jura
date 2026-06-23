@@ -18,12 +18,11 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      # Crucial: This builds for the simulator architecture Appetize needs
+      # Crucial: This builds for the simulator architecture Appetize needs using the .xcodeproj file
       - name: Build iOS Simulator App via Xcode
         run: |
           cd iosApp
-          cd iosApp.xcodeproj
-          xcodebuild -workspace iosApp.xcworkspace \
+          xcodebuild -project iosApp.xcodeproj \
                      -scheme iosApp \
                      -configuration Debug \
                      -sdk iphonesimulator \
