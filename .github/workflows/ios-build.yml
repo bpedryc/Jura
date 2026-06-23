@@ -1,8 +1,6 @@
 name: Build iOS App
 
 on:
-  push:
-    branches: [ "main" ] # Triggers whenever you push to main
   workflow_dispatch: # Allows you to trigger this manually from GitHub
 
 jobs:
@@ -24,6 +22,7 @@ jobs:
       - name: Build iOS Simulator App via Xcode
         run: |
           cd iosApp
+          cd iosApp.xcodeproj
           xcodebuild -workspace iosApp.xcworkspace \
                      -scheme iosApp \
                      -configuration Debug \
